@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<head>
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href='../static/styles.css' />
+</head>
+
+<body>
+  <h1>Plant Manager</h1>
+  <h2>Camera</h2>
+  <a href="/" onclick="javascript:event.target.port=8000">View Live Feed</a>
+  <h2> Config </h2>
+  <form method="POST">
+    <p>Plant 1: {{type1}} <input type="text" name="Plant1" /></p>
+    <p>Plant 2: {{type2}} <input type="text" name="Plant2" /></p>
+    <p><input type="submit" value="submit" /></p>
+  </form>
+  <a href="/" class="button">REFRESH</a>
+
+  <h2>Remote Control</h2>
+  <h4>Plant 1: {{type1}}</h4>
+  <a href="/1/water" class="button">Toggle Water</a>
+  <a href="/1/mode" class="button">Toggle Mode: {{mode1}}</a>
+  <h4>Plant 2: {{type2}}</h4>
+  <a href="/2/water" class="button">Toggle Water </a>
+  <a href="/2/mode" class="button">Toggle Mode: {{mode2}}</a>
+  <h2>Latest Data </h2>
+  <h4>Plant 1: {{type1}} </h4>
+  <table style="width:50%">
+    <tr>
+      <th>Time</th>
+      <th>Temp</th>
+      <th>Hum</th>
+      <th>Light</th>
+    </tr>
+    <tr>
+      <td>{{time1}}</td>
+      <td>{{temp1}}</td>
+      <td>{{hum1}}</td>
+      <td>{{light1}}</td>
+    </tr>
+  </table>
+  <table style="width:50%">
+    <tr>
+      <th>Camera Time</th>
+      <th>Height</th>
+      <th>Greenness</th>
+    </tr>
+    <tr>
+      <td>{{camera_time1}}</td>
+      <td>{{height1}}</td>
+      <td>{{greenness1}}</td>
+    </tr>
+  </table>
+  <h4>Plant 2: {{type2}}</h4>
+  <table style="width:50%">
+    <tr>
+      <th>Time</th>
+      <th>Temp</th>
+      <th>Hum</th>
+      <th>Light</th>
+    </tr>
+    <tr>
+      <td>{{time2}}</td>
+      <td>{{temp2}}</td>
+      <td>{{hum2}}</td>
+      <td>{{light2}}</td>
+    </tr>
+  </table>
+  <table style="width:50%">
+    <tr>
+      <th>Camera Time</th>
+      <th>Height</th>
+      <th>Greenness</th>
+    </tr>
+    <tr>
+      <td>{{camera_time2}}</td>
+      <td>{{height2}}</td>
+      <td>{{greenness2}}</td>
+    </tr>
+  </table>
+
+  <h2>Plots </h2>
+  <img src='data:image/png;base64,{{plot1}}' />
+  <img src='data:image/png;base64,{{plot2}}' />
+  <img src='data:image/png;base64,{{camera_plot1}}' />
+  <img src='data:image/png;base64,{{camera_plot2}}' />
+
+
+</body>
+
+</html>
+
+<!DOCTYPE html>
