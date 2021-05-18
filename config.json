@@ -1,1 +1,1 @@
-{"1": {"pin": 5, "water": "Off", "mode": "Automatic", "type": "Tomato"}, "2": {"pin": 7, "water": "Off", "mode": "Automatic", "type": "Mint"}}
+{"1": {"pin": 5, "water": "On", "mode": "Automatic", "type": "Tomato"}, "2": {"pin": 7, "water": "On", "mode": "Automatic", "type": "Mint"}}

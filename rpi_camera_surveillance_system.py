@@ -13,6 +13,7 @@ from picamera.array import PiRGBArray
 from time import sleep
 import time
 import cv2
+from picamera.bcm_host import VC_IMAGE_BAYER
 
 PAGE = """\
 <html>
@@ -80,14 +81,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(frame)
                     self.wfile.write(b'\r\n')
-                    if time.time() - start_time> 10:
-                        print("hello camera")
-                        start_time = time.time()
-                        rawCapture = PiRGBArray(camera)
-                        sleep(0.1)
-                        camera.capture(rawCapture, format="bgr")
-                        camera.close()
-                        image = rawCapture.array
+                        
+                        
             except Exception as e:
                 logging.warning(
                     'Removed streaming client %s: %s',
@@ -108,6 +103,12 @@ with picamera.PiCamera(resolution='640x480', framerate=24) as camera:
     #camera.rotation = 90
     camera.start_recording(output, format='mjpeg')
     try:
+        start_time = time.time()
+        rawCapture = PiRGBArray(camera)
+        sleep(0.1)
+        camera.capture(rawCapture, format="bgr")
+        image = rawCapture.array
+        cv2.imwrite("test.jpg", image)
         address = ('', 8000)
         server = StreamingServer(address, StreamingHandler)
         server.serve_forever()

@@ -43,6 +43,8 @@ while True:
 
     green_img[imask] = image[imask]
 
+    cv2.imshow("img", green_img)
+    cv2.waitKey(0)
 
     # Get our options
     parser = argparse.ArgumentParser(description='Object height measurement')
@@ -50,8 +52,8 @@ while True:
                         help=
     "width of the left-most object in the image")
     args = vars(parser.parse_args())
-    # cv2.imshow("Image", image)
-    # cv2.waitKey(0)
+    cv2.imshow("Image", image)
+    cv2.waitKey(0)
     #image = cv2.imread("./photos/test_plant1.jpg")
 
     # Cover to grayscale and blur
@@ -63,8 +65,8 @@ while True:
     canny_output = cv2.dilate(canny_output, None, iterations=1)
     canny_output = cv2.erode(canny_output, None, iterations=1)
     canny_output = cv2.GaussianBlur(canny_output, (7, 7), 0)
-    # cv2.imshow("Image", canny_output)
-    # cv2.waitKey(0)
+    cv2.imshow("Image", canny_output)
+    cv2.waitKey(0)
     # Get the contours of the shapes, sort l-to-r and create boxes
     _, contours, _ = cv2.findContours(canny_output, cv2.RETR_EXTERNAL,
                                     cv2.CHAIN_APPROX_SIMPLE)
@@ -121,8 +123,8 @@ while True:
 
     # Resize and display the image (press key to exit)
     resized_image = cv2.resize(output_image, (1280, 720))
-    # cv2.imshow("Image", resized_image)
-    # cv2.waitKey(0)
+    cv2.imshow("Image", resized_image)
+    cv2.waitKey(0)
     sleep(60 * 60 * 24)
 
     
