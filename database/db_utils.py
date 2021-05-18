@@ -43,14 +43,14 @@ def print_data(table):
 
 
 # create_table2("CameraTable")
-add_data(TABLE_NAME, 1, (12, 56, 3))
-sleep(1)
-add_data(TABLE_NAME, 2, (2, 1, 10))
-sleep(1)
-add_data(TABLE_NAME, 1, (6, 9, 10))
-sleep(1)
-add_data(TABLE_NAME, 1, (50, 1, 45))
-sleep(1)
+# add_data(TABLE_NAME, 1, (12, 56, 3))
+# sleep(1)
+# add_data(TABLE_NAME, 2, (2, 1, 10))
+# sleep(1)
+# add_data(TABLE_NAME, 1, (6, 9, 10))
+# sleep(1)
+# add_data(TABLE_NAME, 1, (50, 1, 45))
+# sleep(1)
 
 print_data("PlantTable")
 print_data("CameraTable")

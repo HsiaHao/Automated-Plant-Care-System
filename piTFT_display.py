@@ -62,6 +62,10 @@ os.putenv('SDL_FBDEV', '/dev/fb1')
 os.putenv('SDL_MOUSEDRV', 'TSLIB')                  #track mouse clicks on piTFT
 os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
 
+# Database Constants
+DB_NAME = './database/sensorData.db'
+TABLE_NAME = 'PlantTable'
+
 # Config Helpers
 def read_config():
     with open('config.json') as json_file:
@@ -214,6 +218,20 @@ def display_level():
     global p2_sun_threshold
     global sunlight
 
+    # Get Status
+    time1, temp1, hum1, light1, camera_time1, height1, greenness1 = getLatest(
+        1)
+    time2, temp2, hum2, light2, camera_time2, height2, greenness2 = getLatest(
+        2)
+    
+    green_alert1 = "Healthy color!"
+    green_alert2 = "Healthy color!"
+    # Alerts
+    if float(greenness1) < 0.8:
+        green_alert1 = "Too brown!"
+    if float(greenness2) < 0.8:
+        green_alert2 = "Too brown!"
+
     screen.fill(BLACK)
     background_rect = background.get_rect()
     screen.blit(background, background_rect)
@@ -254,6 +272,7 @@ def display_level():
         else:
             text = "Adequate Sunlight"
         new_label(text, 160, 80, 30, WHITE)
+        new_label(green_alert1, 160, 100, 30, WHITE)
         new_label("Soil Moisture: " + soil_moisture_1, 160, 120, 30, WHITE)
         new_button("Back", 90, 210, 100, 40, WHITE)
         new_button("Water", 230, 210, 100, 40, WHITE)
@@ -263,6 +282,7 @@ def display_level():
         else:
             text = "Adequate Sunlight"
         new_label(text, 160, 80, 30, WHITE)
+        new_label(green_alert2, 160, 100, 30, WHITE)
         new_label("Soil Moisture: " + soil_moisture_2, 160, 120, 30, WHITE)
         new_button("Back", 90, 210, 100, 40, WHITE)
         new_button("Water", 230, 210, 100, 40, WHITE)
@@ -376,6 +396,20 @@ def plant_param(p1_sun, p1_moisture, p2_sun, p2_moisture):
     elif "partial" in plant2_sunlight and "shade" in plant2_sunlight:
         p2_sun_threshold = 0.50
 
+def getLatest(id):
+    conn = lite.connect(DB_NAME)
+    curs = conn.cursor()
+    time, temp, hum, light, camera_time, height, greenness = 0, 0, 0, 0, 0, 0, 0
+    for row in curs.execute("SELECT * FROM {} WHERE id={} ORDER BY timestamp DESC LIMIT 1".format(TABLE_NAME, id)):
+        time, temp, hum, light = str(row[1]), str(
+            row[2]), str(row[3]), str(row[4])
+    for row in curs.execute("SELECT * FROM {} WHERE id={} ORDER BY timestamp DESC LIMIT 1".format("CameraTable", id)):
+        camera_time, height, greenness = str(row[1]), str(
+            row[2]), str(row[3])
+
+    conn.close()
+    return time, temp, hum, light, camera_time, height, greenness
+
 #pygame initializations
 pygame.init()
 screen = pygame.display.set_mode((320, 240))
@@ -466,8 +500,10 @@ p2_auto_pump_water()
 
 timer = 0
 
+
 #main loop
 while True:
+
     t_h = DHT_reading()
     if t_h != "error":                                          #sometimes DHT will throw error
         temp = round(t_h[0], 2)

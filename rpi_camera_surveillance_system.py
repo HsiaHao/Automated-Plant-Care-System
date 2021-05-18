@@ -7,7 +7,12 @@ import picamera
 import logging
 import socketserver
 from threading import Condition
+from picamera import PiCamera
 from http import server
+from picamera.array import PiRGBArray
+from time import sleep
+import time
+import cv2
 
 PAGE = """\
 <html>
@@ -63,6 +68,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header(
                 'Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
             self.end_headers()
+            start_time = time.time()
             try:
                 while True:
                     with output.condition:
@@ -74,6 +80,14 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(frame)
                     self.wfile.write(b'\r\n')
+                    if time.time() - start_time> 10:
+                        print("hello camera")
+                        start_time = time.time()
+                        rawCapture = PiRGBArray(camera)
+                        sleep(0.1)
+                        camera.capture(rawCapture, format="bgr")
+                        camera.close()
+                        image = rawCapture.array
             except Exception as e:
                 logging.warning(
                     'Removed streaming client %s: %s',

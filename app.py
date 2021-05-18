@@ -192,6 +192,15 @@ def index():
     plot2 = getPlots(2)
     camera_plot1 = getCameraPlots(1)
     camera_plot2 = getCameraPlots(2)
+
+    # Alerts
+    green_alert1 = "Plant 1 is healthy color"
+    green_alert2 = "Plant 2 is healthy color"
+    if float(greenness1) < 0.8:
+        green_alert1 = "Plant 1 is too brown"
+    if float(greenness2) < 0.8:
+        green_alert2 = "Plant 2 is too brown"
+
     templateData = {
         'time1': time1,
         'temp1': temp1,
@@ -216,7 +225,9 @@ def index():
         'water1': config["1"]['water'],
         'water2': config["2"]['water'],
         'type1': config["1"]["type"],
-        'type2': config["2"]["type"]
+        'type2': config["2"]["type"],
+        'green_alert1' : green_alert1,
+        'green_alert2' : green_alert2
     }
     print(read_config())
     return render_template('index_gpio.html', **templateData)
@@ -292,4 +303,4 @@ def add_header(response):
 
 
 if __name__ == "__main__":
-    app.run(host='192.168.1.116', port=70, debug=True)
+    app.run(host='0.0.0.0', port=70, debug=True)
