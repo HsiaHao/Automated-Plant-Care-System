@@ -5,18 +5,20 @@ import numpy as np
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 from time import sleep
-
 import sqlite3 as lite
 import sys
 
 # command: python3 measure.py -w 16 -i 1
-# Get our options
+# When executing this program, it will stop and show you the results.
+# Press any key to contrinue.
+# -w: the height of the reference object
 parser = argparse.ArgumentParser(description='Object height measurement')
 
 parser.add_argument("-w", "--width", type=float, required=True,
                     help="width of the left-most object in the image")
 args = vars(parser.parse_args())
 
+#Use the a photo from camera or an exist image
 #True: Image / False: Camera
 image_or_camera = True
 
@@ -36,9 +38,13 @@ if image is None:
     print('Could not open or find the image:')
     exit(0)
 
+#####   Color Detection    #####
+
+# HSV color range
 brown = [(10, 100, 20), (20, 255, 200)]
 green = [(36, 25, 25), (86, 255, 255)]
 
+# Detect green and brown color
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 mask = cv2.inRange(hsv, green[0], green[1])
 mask2 = cv2.inRange(hsv, brown[0], brown[1])
@@ -48,12 +54,13 @@ cv2.waitKey(0)
 
 print("Green and Brown pixels:",cv2.countNonZero(mask), cv2.countNonZero(mask2))
 
+# count the ratio green_pixels / (green_pixels + brown_pixels)
 green_color = cv2.countNonZero(mask)
-# print("Green: ", green_color)
 brown_color = cv2.countNonZero(mask2)
-# print("Brown: ", brown_color)
 ratio = green_color / (green_color + brown_color)
 print('ratio: ', ratio)
+
+#show thr result images
 imask = mask>0
 green_img = np.zeros_like(image, np.uint8)
 green_img[imask] = image[imask]
@@ -62,7 +69,6 @@ imask = mask2>0
 brown_img = np.zeros_like(image, np.uint8)
 brown_img[imask] = image[imask]
 
-#show color detection
 res = np.hstack((image, green_img))
 cv2.imshow("img", res)
 cv2.waitKey(0)
@@ -70,15 +76,11 @@ res = np.hstack((image, brown_img))
 cv2.imshow("img", res)
 cv2.waitKey(0)
 
+#####   Measure plant height    #####
+
 # Cover to grayscale and blur
 greyscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 greyscale = cv2.GaussianBlur(greyscale, (7, 7), 0)
-
-#histogram equalization
-#equ = cv2.equalizeHist(greyscale)
-#CLACHE
-# clache = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-# cl1 = clache.apply(equ)
 
 # Detect edges and close gaps
 canny_output = cv2.Canny(greyscale, 25, 30)
@@ -121,8 +123,8 @@ image_divide_point = 300
 print("number of contours", len(contours))
 valid_contour = 0
 for i in range(1, len(contours)):
-    #print("bound coordinate: ",int(boundRect[i][0]), int(boundRect[i][1]))
-    # Too smol?
+    # print("bound coordinate: ",int(boundRect[i][0]), int(boundRect[i][1]))
+    # ignore too small objects
     if boundRect[i][2] < 50 or boundRect[i][3] < 50:
         continue
     # print("The Object is at",boundRect[i][2],boundRect[i][3])
@@ -163,7 +165,7 @@ print("First plant height is {0:.0f}mm".format(plantHeight))
 plantHeight2 = (plan2_lowrect - plant2_highrect) * mmPerPixel
 print("Second plant height is {0:.0f}mm".format(plantHeight2))
 
-# Write height and greenness to database
+######### Write height and greenness to database  #########
  DB_NAME = './database/sensorData.db'
  TABLE_NAME = 'CameraTable'
  conn = lite.connect(DB_NAME)
@@ -175,9 +177,8 @@ print("Second plant height is {0:.0f}mm".format(plantHeight2))
  conn.commit()
  conn.close()
 
-# Resize and display the image (press key to exit)
-#resized_image = cv2.resize(output_image, (1280, 720))
-resized_image = cv2.resize(output_image, (360, 640))
 
-cv2.imshow("Image", output_image)
+# Resize and display the image and show the result
+resized_image = cv2.resize(output_image, (360, 640))
+cv2.imshow("Image", resized_image)
 cv2.waitKey(0)
