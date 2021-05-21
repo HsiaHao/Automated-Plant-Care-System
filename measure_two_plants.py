@@ -8,7 +8,7 @@ from time import sleep
 import sqlite3 as lite
 import sys
 
-# command: python3 measure.py -w 16 -i 1
+# command: python3 measure.py -w 16
 # When executing this program, it will stop and show you the results.
 # Press any key to contrinue.
 # -w: the height of the reference object
